@@ -43,8 +43,12 @@ az vm create --resource-group blockchain --name ethnode1 --image UbuntuLTS --siz
 }
 ```
 #### move over .profiles
-**TODO: Fix this section**
-
+```sh
+mkdir ~/code/blockchain
+cd ~/code/blockchain
+git clone git@github.com:msktenn/kidcoin.git
+scp ./kidcoin/res/.profile 52.224.181.80:.profile
+```
 #### ssh to Machine
 ```sh
 ssh 52.224.181.80
@@ -63,7 +67,7 @@ mkdir childblock
 vi genesis.json
 ```
 
-#### create file with following data
+*create file with following data*
 ```json
 {
   "coinbase"   : "0x0000000000000000000000000000000000000001",
@@ -84,7 +88,7 @@ vi genesis.json
 }
 ```
 
-#### make dir inside childblock
+*create dir inside childblock*
 ```sh
 mkdir chaindata
 geth --datadir=./chaindata
@@ -98,4 +102,18 @@ az vm deallocate --resource-group blockchain --name ethnode1
 az vm start --resource-group blockchain --name ethnode1
 az vm list-ip-addresses --resource-group blockchain --name ethnode1 --output table
 ssh 255.255.255.255
+```
+
+### install as service
+```sh
+
+scp ./res/geth.service 52.191.197.206:/lib/systemd/system/
+scp ./res/geth.conf 52.191.197.206:/etc/rsyslog.d/
+sudo systemctl enable geth
+sudo systemctl start geth
+
+--other
+sudo systemctl restart rsyslog
+sudo systemctl daemon-reload
+
 ```

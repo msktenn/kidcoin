@@ -1,0 +1,15 @@
+[Unit]
+Description=The Ethereum Blockchain Command Line Interface
+Documentation=man:geth(1)
+After=network.target
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=geth
+
+[Service]
+User=mknight
+Group=mknight
+ExecStart=/usr/bin/geth --datadir=/home/mknight/chaindata --verbosity 3 --rpc
+
+[Install]
+WantedBy=default.target
