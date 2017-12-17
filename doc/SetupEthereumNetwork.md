@@ -63,8 +63,15 @@ sudo apt-get install geth
 
 #### setup your network
 ```sh
-mkdir childblock
-vi genesis.json
+sudo mkdir /opt/kidblock
+sudo chown mknight /opt/kidblock
+sudo chown u+w /opt/kidblock/
+```
+#### first time setup init
+```sch
+scp ~/code/blockchain/kidcoin/res/genesis.json 52.191.197.206:/opt/kidblock/
+geth --datadir /opt/kidblock/data init genesis.json
+# vi genesis.json
 ```
 
 *create file with following data*
@@ -109,6 +116,8 @@ ssh 255.255.255.255
 
 scp ./res/geth.service 52.191.197.206:/lib/systemd/system/
 scp ./res/geth.conf 52.191.197.206:/etc/rsyslog.d/
+ssh 255.255.255.255
+sudo chown mknight geth.service
 sudo systemctl enable geth
 sudo systemctl start geth
 
