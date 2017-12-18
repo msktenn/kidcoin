@@ -9,7 +9,7 @@ SyslogIdentifier=geth
 [Service]
 User=mknight
 Group=mknight
-ExecStart=/usr/bin/geth --datadir=/opt/kidblock/data --verbosity 3 --rpc
+ExecStart=/usr/bin/geth --datadir=/opt/preveri/data --verbosity 3 --networkid 489 --rpc
 
 [Install]
 WantedBy=default.target

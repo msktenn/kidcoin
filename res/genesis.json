@@ -9,7 +9,7 @@
   "timestamp"  : "0x00",
   "alloc": {},
   "config": {
-        "chainId": 15,
+        "chainId": 489,
         "homesteadBlock": 0,
         "eip155Block": 0,
         "eip158Block": 0

@@ -78,12 +78,23 @@ alias path='echo -e ${PATH//:/\\n}'         # path:         Echo all executable 
 alias show_options='shopt'                  # Show_options: display bash options settings
 alias fix_stty='stty sane'                  # fix_stty:     Restore terminal settings when screwed up
 alias cic='set completion-ignore-case On'   # cic:          Make tab-completion case-insensitive
+alias cdpre ='cd /opt/preveri/'            # preveri:      Go to /opt/preveri
 mcd () { mkdir -p "$1" && cd "$1"; }        # mcd:          Makes new Dir and jumps inside
 trash () { command mv "$@" ~/.Trash ; }     # trash:        Moves a file to the MacOS trash
 ql () { qlmanage -p "$*" >& /dev/null; }    # ql:           Opens any file in MacOS Quicklook Preview
 alias DT='tee ~/Desktop/terminalOut.txt'    # DT:           Pipe content to file on MacOS Desktop
 
 hf () { history | grep "$@"; }
+
+# tail the geth log
+# -------------------------------------------
+  tailg ()  {
+    if [ -z "$1" ] ; then
+      tail /var/log/geth.log
+    else
+      tail -$@ /var/log/geth.log
+    fi
+  }
 
 #   lr:  Full Recursive Directory Listing
 #   ------------------------------------------
@@ -295,4 +306,3 @@ export SERVICE_FQDN=local.onedatascan.io
 export AGENT_INSTALL_HOME=${DOMAIN_HOME}/j2ee_agents/weblogic_v10_agent
 export SERVICE_NAME=$SERVICE_FQDN
 export SERVER_TYPE=ADMIN
-

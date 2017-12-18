@@ -8,7 +8,7 @@ az login
 ```
 #### create a group in azure
 ```sh
-az group create --name blockchain --location eastus
+az group create --name preveri --location eastus
 ```
 #### save output
 ```json
@@ -16,7 +16,7 @@ az group create --name blockchain --location eastus
   "id": "/subscriptions/a19f1335-8f39-4ee7-9d88-e431f3f95584/resourceGroups/blockchain",
   "location": "eastus",
   "managedBy": null,
-  "name": "blockchain",
+  "name": "preveri",
   "properties": {
      "provisioningState": "Succeeded"
   },
@@ -26,7 +26,7 @@ az group create --name blockchain --location eastus
 
 #### create a vm
 ```sh
-az vm create --resource-group blockchain --name ethnode1 --image UbuntuLTS --size Standard_A0 --generate-ssh-keys
+az vm create --resource-group preveri --name ethnode1 --image UbuntuLTS --size Standard_A0 --generate-ssh-keys
 ```
 #### save output
 ```json
@@ -38,16 +38,16 @@ az vm create --resource-group blockchain --name ethnode1 --image UbuntuLTS --siz
   "powerState": "VM running",
   "privateIpAddress": "10.0.0.4",
   "publicIpAddress": "52.224.181.80",
-  "resourceGroup": "blockchain",
+  "resourceGroup": "preveri",
   "zones": ""
 }
 ```
 #### move over .profiles
 ```sh
-mkdir ~/code/blockchain
-cd ~/code/blockchain
-git clone git@github.com:msktenn/kidcoin.git
-scp ./kidcoin/res/.profile 52.224.181.80:.profile
+mkdir ~/code/
+cd ~/code/
+git clone git@github.com:msktenn/preveri.git
+scp ~/code/preveri/res/.profile 52.224.181.80:.profile
 ```
 #### ssh to Machine
 ```sh
@@ -63,14 +63,14 @@ sudo apt-get install geth
 
 #### setup your network
 ```sh
-sudo mkdir /opt/kidblock
-sudo chown mknight /opt/kidblock
-sudo chown u+w /opt/kidblock/
+sudo mkdir /opt/preveri
+sudo chown mknight /opt/preveri
+sudo chown u+w /opt/preveri/
 ```
 #### first time setup init
 ```sch
-scp ~/code/blockchain/kidcoin/res/genesis.json 52.191.197.206:/opt/kidblock/
-geth --datadir /opt/kidblock/data init genesis.json
+scp ~/code/blockchain/preveri/res/genesis.json 52.191.197.206:/opt/preveri/
+geth --datadir /opt/preveri/data init genesis.json
 # vi genesis.json
 ```
 
@@ -95,27 +95,10 @@ geth --datadir /opt/kidblock/data init genesis.json
 }
 ```
 
-*create dir inside childblock*
-```sh
-mkdir chaindata
-geth --datadir=./chaindata
-```
-#### deallocate
-```sh
-az vm deallocate --resource-group blockchain --name ethnode1
-```
-#### reallocate
-```sh
-az vm start --resource-group blockchain --name ethnode1
-az vm list-ip-addresses --resource-group blockchain --name ethnode1 --output table
-ssh 255.255.255.255
-```
-
 ### install as service
 ```sh
-
-scp ./res/geth.service 52.191.197.206:/lib/systemd/system/
-scp ./res/geth.conf 52.191.197.206:/etc/rsyslog.d/
+scp ~/code/preveri/res/geth.service 52.191.197.206:/lib/systemd/system/
+scp ~/code/preveri/geth.conf 52.191.197.206:/etc/rsyslog.d/
 ssh 255.255.255.255
 sudo chown mknight geth.service
 sudo systemctl enable geth
@@ -124,5 +107,16 @@ sudo systemctl start geth
 --other
 sudo systemctl restart rsyslog
 sudo systemctl daemon-reload
+```
 
+
+#### deallocate
+```sh
+az vm deallocate --resource-group preveri --name ethnode1
+```
+#### reallocate
+```sh
+az vm start --resource-group preveri --name ethnode1
+az vm list-ip-addresses --resource-group preveri --name ethnode1 --output table
+ssh 255.255.255.255
 ```
