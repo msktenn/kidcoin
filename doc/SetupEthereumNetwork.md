@@ -6,11 +6,11 @@ brew install azure-cli
 ```sh
 az login
 ```
-#### create a group in azure
+#### create a group in azure preveri
 ```sh
 az group create --name preveri --location eastus
 ```
-#### save output
+**output should look something like this**
 ```json
 {
   "id": "/subscriptions/a19f1335-8f39-4ee7-9d88-e431f3f95584/resourceGroups/blockchain",
@@ -24,11 +24,11 @@ az group create --name preveri --location eastus
 }
 ```
 
-#### create a vm
+#### create a vm ethnode1
 ```sh
-az vm create --resource-group preveri --name ethnode1 --image UbuntuLTS --size Standard_A0 --generate-ssh-keys
+az vm create --resource-group preveri --name ethnode1 --image UbuntuLTS --size Standard_A0 --admin-username preveri --generate-ssh-keys
 ```
-#### save output
+**output should look something like this**
 ```json
 {
   "fqdns": "",
@@ -42,81 +42,79 @@ az vm create --resource-group preveri --name ethnode1 --image UbuntuLTS --size S
   "zones": ""
 }
 ```
-#### move over .profiles
+Save the publicIpAddress and privateIpAddress you will need them later.
+
+#### get preveri repository on local machine
 ```sh
 mkdir ~/code/
 cd ~/code/
 git clone git@github.com:msktenn/preveri.git
-scp ~/code/preveri/res/.profile 52.224.181.80:.profile
 ```
-#### ssh to Machine
+#### setup ethereum on new machine (ethnode1)
 ```sh
-ssh 52.224.181.80
+#move profile over to ethnode1
+scp ~/code/preveri/res/.profile preveri@[IPAddress]:.profile
+
+#ssh to ethnode1
+ssh preveri@[IPAddress]
 ```
-#### setup ethereum
+
 ```sh
+#install ethereum on ethnode1
 sudo apt-get install software-properties-common
 sudo add-apt-repository -y ppa:ethereum/ethereum
 sudo apt-get update
 sudo apt-get install geth
-```
 
-#### setup your network
-```sh
+#prepare directory for private ethereum network
 sudo mkdir /opt/preveri
-sudo chown mknight /opt/preveri
-sudo chown u+w /opt/preveri/
-```
-#### first time setup init
-```sch
-scp ~/code/blockchain/preveri/res/genesis.json 52.191.197.206:/opt/preveri/
-geth --datadir /opt/preveri/data init genesis.json
-# vi genesis.json
-```
 
-*create file with following data*
-```json
-{
-  "coinbase"   : "0x0000000000000000000000000000000000000001",
-  "difficulty" : "0x20000",
-  "extraData"  : "",
-  "gasLimit"   : "0x2fefd8",
-  "nonce"      : "0x0000000000000042",
-  "mixhash"    : "0x0000000000000000000000000000000000000000000000000000000000000000",
-  "parentHash" : "0x0000000000000000000000000000000000000000000000000000000000000000",
-  "timestamp"  : "0x00",
-  "alloc": {},
-  "config": {
-        "chainId": 15,
-        "homesteadBlock": 0,
-        "eip155Block": 0,
-        "eip158Block": 0
-    }
-}
+sudo chown preveri /opt/preveri
+sudo chown preveri /lib/systemd/system
+sudo chown preveri /etc/rsyslog.d
+exit
 ```
-
-### install as service
+#### setup private ethereum network
 ```sh
-scp ~/code/preveri/res/geth.service 52.191.197.206:/lib/systemd/system/
-scp ~/code/preveri/geth.conf 52.191.197.206:/etc/rsyslog.d/
-ssh 255.255.255.255
-sudo chown mknight geth.service
-sudo systemctl enable geth
-sudo systemctl start geth
+#copy genesis.json to ethnode1
+scp ~/code/preveri/res/genesis.json preveri@[IPAddress]:/opt/preveri
+scp ~/code/preveri/res/geth.service preveri@[IPAddress]:/lib/systemd/system
+scp ~/code/preveri/res/geth.conf preveri@[IPAddress]:/etc/rsyslog.d
 
---other
+#ssh to ethnode1
+ssh preveri@[IPAddress]
+```
+
+```sh
+sudo chown root /lib/systemd/system
+sudo chown root /etc/rsyslog.d
+# initialize preveri network
+geth --datadir /opt/preveri/chaindata init /opt/preveri/genesis.json
+
+#setup geth service on ethnode1
+sudo chown preveri /var/log/geth.log
+sudo chown preveri /lib/systemd/system/geth.service
+sudo systemctl enable geth
 sudo systemctl restart rsyslog
-sudo systemctl daemon-reload
+sudo systemctl start geth
 ```
 
 
-#### deallocate
+#### when you are done with ethnode1 deallocate it to save money
 ```sh
 az vm deallocate --resource-group preveri --name ethnode1
 ```
-#### reallocate
+
+#### reallocate but remember you will get a new ip addresses
 ```sh
 az vm start --resource-group preveri --name ethnode1
 az vm list-ip-addresses --resource-group preveri --name ethnode1 --output table
-ssh 255.255.255.255
+ssh preveri@[IPAddress]
+```
+
+### Other commands you may need
+```sh
+az group delete --name preveri --no-wait --yes
+sudo systemctl restart rsyslog
+sudo systemctl daemon-reload
 ```

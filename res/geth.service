@@ -7,9 +7,9 @@ StandardError=syslog
 SyslogIdentifier=geth
 
 [Service]
-User=mknight
-Group=mknight
-ExecStart=/usr/bin/geth --datadir=/opt/preveri/data --verbosity 3 --networkid 489 --rpc
+User=preveri
+Group=preveri
+ExecStart=/usr/bin/geth --datadir=/opt/preveri/chaindata --verbosity 3 --networkid 489 --rpc
 
 [Install]
 WantedBy=default.target
